@@ -59,12 +59,12 @@ def main():
     parser.add_argument('--beta1', type=float, default=0.9,
                         help='hyperpara-Adam')
     #history_sequences_20181014_fajie_smalltest.csv
-    parser.add_argument('--datapath', type=str, default='Data/Session/history_sequences_20181014_fajie_transfer_pretrain_small.csv',
-                        help='data path')
-    parser.add_argument('--eval_iter', type=int, default=10,
+    parser.add_argument('--eval_iter', type=int, default=10000,
                         help='Sample generator output evry x steps')
-    parser.add_argument('--save_para_every', type=int, default=10,
+    parser.add_argument('--save_para_every', type=int, default=10000,
                         help='save model parameters every')
+    parser.add_argument('--datapath', type=str, default='Data/Session/coldrec2_pre.csv',
+                        help='data path')
     parser.add_argument('--tt_percentage', type=float, default=0.5,
                         help='0.2 means 80% training 20% testing')
     parser.add_argument('--is_generatesubsession', type=bool, default=False,
@@ -100,19 +100,14 @@ def main():
         train_set = generatesubsequence(train_set,padtoken)
 
     model_para = {
-        #if you changed the parameters here, also do not forget to change paramters in nextitrec_generate.py
         'item_size': len(items),
-        'dilated_channels': 64,
-        # if you use nextitnet_residual_block, you can use [1, 4, ],
-        # if you use nextitnet_residual_block_one, you can tune and i suggest [1, 2, 4, ], for a trial
-        # when you change it do not forget to change it in nextitrec_generate.py
-        # if you find removing residual network, the performance does not obviously decrease, then I think your data does not have strong seqeunce. Change a dataset and try again.
-        'dilations': [1,4,1,4,1,4,1,4,],
+        'dilated_channels': 64, # note in the paper we use 256
+        'dilations': [1,4,1,4,1,4,1,4,], # note 1 4 means  1 2 4 8
         'kernel_size': 3,
         'learning_rate':0.001,
-        'batch_size':2,
-        'iterations':4,
-        'is_negsample':True #False denotes using full softmax
+        'batch_size':32,# you can try 32, 64, 128, 256, etc.
+        'iterations':5, #you can just stop pretraining if performance does not change in the testing set. It may not need 5 iterations
+        'is_negsample':True #False denotes no negative sampling
     }
 
     itemrec = generator_recsys_cau.NextItNet_Decoder(model_para)
