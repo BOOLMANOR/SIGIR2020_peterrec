@@ -39,8 +39,8 @@ class NextItNet_Decoder:
 
     def model_graph(self, itemseq_input, train=True):
         model_para = self.model_para
-        context_seq = itemseq_input[:, 0:-1]
-        label_seq = itemseq_input[:, 1:]
+        context_seq = itemseq_input[:, 0:-1]#取所有行，除了最后一列
+        label_seq = itemseq_input[:, 1:]#取所有行，除了第一列
 
         self.context_embedding = tf.nn.embedding_lookup(self.allitem_embeddings,
                                                    context_seq, name="context_embedding")
