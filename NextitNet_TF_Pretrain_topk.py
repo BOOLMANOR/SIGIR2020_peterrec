@@ -77,28 +77,31 @@ def main():
 
     dl = data_loader_recsys.Data_Loader({'model_type': 'generator', 'dir_name': args.datapath})
     all_samples = dl.item
+    #all_samples整个做完映射的文档
     items = dl.item_dict
+    #items词典
     print "len(items)",len(items)
 
     if items.has_key(args.padtoken):
         padtoken = items[args.padtoken]  # is the padding token in the beggining of the sentence
     else:
-        # padtoken = sys.maxint
         padtoken = len(items) + 1
 
     # Randomly shuffle data
     np.random.seed(10)
     shuffle_indices = np.random.permutation(np.arange(len(all_samples)))
     all_samples = all_samples[shuffle_indices]
+    #随机生成10个数，把all_samples打乱
 
 
     # Split train/test set
     dev_sample_index = -1 * int(args.tt_percentage * float(len(all_samples)))
     train_set, valid_set = all_samples[:dev_sample_index], all_samples[dev_sample_index:]
-
+    #取训练集和测试集
+    
     if args.is_generatesubsession:
         train_set = generatesubsequence(train_set,padtoken)
-
+    #几个模板里都是is_generatesubsession=False，并没调用
     model_para = {
         'item_size': len(items),
         'dilated_channels': 64, # note in the paper we use 256
