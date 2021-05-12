@@ -10,7 +10,8 @@ class NextItNet_Decoder:
         self.allitem_embeddings = tf.get_variable('allitem_embeddings',
                                                     [model_para['item_size'], embedding_width],
                                                     initializer=tf.truncated_normal_initializer(stddev=0.02))
-
+        #创建新的tensorflow变量，常见的initializer有：常量初始化器tf.constant_initializer、正太分布初始化器tf.random_normal_initializer、
+        #截断正态分布初始化器tf.truncated_normal_initializer、均匀分布初始化器tf.random_uniform_initializer。
     def train_graph(self, is_negsample=False):
         self.itemseq_input = tf.placeholder('int32',
                                          [None, None], name='itemseq_input')
