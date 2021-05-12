@@ -44,6 +44,7 @@ class NextItNet_Decoder:
 
         self.context_embedding = tf.nn.embedding_lookup(self.allitem_embeddings,
                                                    context_seq, name="context_embedding")
+        #就是根据train_inputs中的id，寻找embeddings中的对应元素。比如，train_inputs=[1,3,5]，则找出embeddings中下标为1,3,5的向量组成一个矩阵返回。
         dilate_input = self.context_embedding
         for layer_id, dilation in enumerate(model_para['dilations']):
             dilate_input = ops.nextitnet_residual_block(dilate_input, dilation,
