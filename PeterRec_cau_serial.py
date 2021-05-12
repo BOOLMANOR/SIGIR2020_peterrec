@@ -37,11 +37,11 @@ def main():
                         help='Sample from top k predictions')
     parser.add_argument('--beta1', type=float, default=0.9,
                         help='hyperpara-Adam')
-    parser.add_argument('--eval_iter', type=int, default=1,
+    parser.add_argument('--eval_iter', type=int, default=500,
                         help='Sample generator output evry x steps')
-    parser.add_argument('--save_para_every', type=int, default=1,
+    parser.add_argument('--save_para_every', type=int, default=500,
                         help='save model parameters every')
-    parser.add_argument('--datapath', type=str, default='Data/Session/history_sequences_20181014_fajie_transfer_finetune_small.csv',
+    parser.add_argument('--datapath', type=str, default='Data/Session/coldrec2_fine.csv',
                         help='data path')
     parser.add_argument('--tt_percentage', type=float, default=0.9,
                         help='default=0.2 means 80% training 20% testing')
@@ -82,16 +82,15 @@ def main():
     train_set, valid_set = all_samples[:dev_sample_index], all_samples[dev_sample_index:]
 
     model_para = {
-        #all parameters shuold be consist with those in NextitNet_TF_Pretrain.py!!!!
         'item_size': len(items),
         'target_item_size': len(targets),
         'dilated_channels': 64,
-        'cardinality': 1,#using a large number does not performs better. cardinality=1 denotes the standard residual block
+        'cardinality': 1, # 1 is ResNet, otherwise is ResNeXt (performs similarly, but slowly)
         'dilations': [1,4,1,4,1,4,1,4,],
         'kernel_size': 3,
-        'learning_rate':0.0005,
-        'batch_size':3, #you can not use batch_size=1 since we use np.squeeze will reuduce one dimension
-        'iterations': 400,
+        'learning_rate':0.0001,
+        'batch_size':512, #you can not use batch_size=1 since in the following you use np.squeeze will reuduce one dimension
+        'iterations': 20, # note this is not the default setup, you should set it according to your own dataset by watching the performance in your testing set.
         'has_positionalembedding': args.has_positionalembedding
     }
     itemrec = generator_recsys.NextItNet_Decoder(model_para)
